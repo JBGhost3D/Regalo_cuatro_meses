@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Cuatro Meses Amor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=Zen+Maru+Gothic:wght@400;500;700&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --sunset-top: #241b4e;
+      --sunset-mid: #6b4c8a;
+      --sunset-low: #ff7b42;
+      --sunset-horizon: #ffb347;
+      --paper: #f3e3c3;
+      --paper-dark: #e3cda0;
+      --ink: #3a2a1a;
+      --leaf: #7a8450;
+      --accent: #ff7b42;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      color: var(--ink);
+      overflow-x: hidden;
+      background: #000;
+    }
+
+    h1,
+    h2,
+    .brush {
+      font-family: 'Yuji Syuku', serif;
+      font-weight: 400;
+    }
+
+    /* ---------- Escena ---------- */
+    .scene {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      overflow: hidden;
+      background: linear-gradient(to bottom,
+          var(--sunset-top) 0%,
+          var(--sunset-mid) 45%,
+          var(--sunset-low) 75%,
+          var(--sunset-horizon) 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .sun {
+      position: absolute;
+      top: 38%;
+      left: 50%;
+      width: 130px;
+      height: 130px;
+      background: radial-gradient(circle, #ffe9b0 0%, #ffb347 55%, rgba(255, 123, 66, 0) 75%);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      filter: blur(1px);
+    }
+
+    .stars {
+      position: absolute;
+      inset: 0 0 55% 0;
+      pointer-events: none;
+    }
+
+    .star {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      background: #fff;
+      border-radius: 50%;
+      opacity: 0;
+      animation: twinkle 4s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+
+      0%,
+      100% {
+        opacity: 0;
+      }
+
+      50% {
+        opacity: .9;
+      }
+    }
+
+    .village {
+      position: relative;
+      width: 100%;
+      display: block;
+      margin-top: auto;
+    }
+
+    /* hojas cayendo */
+    .leaves {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    .leaf {
+      position: absolute;
+      top: -5%;
+      font-size: 18px;
+      color: var(--leaf);
+      animation-name: fall, sway;
+      animation-timing-function: linear, ease-in-out;
+      animation-iteration-count: infinite, infinite;
+      opacity: .85;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(115vh);
+      }
+    }
+
+    @keyframes sway {
+
+      0%,
+      100% {
+        margin-left: 0;
+      }
+
+      50% {
+        margin-left: 40px;
+      }
+    }
+
+    /* ---------- Portada ---------- */
+    .cover {
+      position: relative;
+      z-index: 6;
+      text-align: center;
+      padding-bottom: 12vh;
+      color: #fff4e0;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, .45);
+    }
+
+    .cover .brush {
+      font-size: clamp(2.6rem, 9vw, 5rem);
+      margin: 0;
+      letter-spacing: .02em;
+    }
+
+    .cover p {
+      margin: .4rem 0 1.6rem;
+      font-size: 1.05rem;
+      opacity: .9;
+    }
+
+    .start-btn {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 1rem;
+      padding: .8rem 1.8rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 244, 224, .6);
+      background: rgba(255, 244, 224, .08);
+      color: #fff4e0;
+      cursor: pointer;
+      backdrop-filter: blur(2px);
+      transition: transform .25s ease, background .25s ease;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-2px);
+      background: rgba(255, 244, 224, .18);
+    }
+
+    /* ---------- Caja de diálogo ---------- */
+    .vn-screen {
+      display: none;
+      position: relative;
+      min-height: 100vh;
+      background: linear-gradient(to bottom, var(--sunset-top) 0%, var(--sunset-mid) 50%, var(--sunset-low) 85%, var(--sunset-horizon) 100%);
+      overflow: hidden;
+    }
+
+    .vn-screen.active {
+      display: block;
+    }
+
+    .vn-image-wrap {
+      position: absolute;
+      top: 7%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(70%, 420px);
+      z-index: 6;
+      display: flex;
+      justify-content: center;
+    }
+
+    .vn-image {
+      width: 100%;
+      display: block;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .4);
+      opacity: 0;
+    }
+
+    .vn-image.enter {
+      animation: imgIn .5s ease forwards;
+    }
+
+    .vn-image.exit {
+      animation: imgOut .4s ease forwards;
+    }
+
+    @keyframes imgIn {
+      from {
+        opacity: 0;
+        transform: scale(.9) translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    @keyframes imgOut {
+      from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: scale(1.05) translateY(-20px);
+      }
+    }
+
+    .dialog-wrap {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 6;
+      padding: 0 5%;
+      display: flex;
+      justify-content: center;
+    }
+
+    .dialog-box {
+      width: 100%;
+      max-width: 720px;
+      margin-bottom: calc(5vh + env(safe-area-inset-bottom, 0px));
+      background: var(--paper);
+      border: 2px solid var(--paper-dark);
+      border-radius: 18px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .35);
+      padding: 1.4rem 1.6rem 1.2rem;
+      max-height: 46vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .speaker {
+      font-family: 'Yuji Syuku', serif;
+      font-size: 1.1rem;
+      color: var(--accent);
+      margin: 0 0 .4rem;
+    }
+
+    .dialog-text {
+      min-height: 3.6em;
+      font-size: 1.08rem;
+      line-height: 1.55;
+      margin: 0 0 1rem;
+    }
+
+    .dialog-footer {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      gap: .5rem;
+    }
+
+    .leaf-icon {
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-bottom: 10px solid var(--leaf);
+      opacity: .4;
+      animation: blink 1.2s infinite;
+    }
+
+    @keyframes blink {
+
+      0%,
+      100% {
+        opacity: .15;
+      }
+
+      50% {
+        opacity: .7;
+      }
+    }
+
+    .next-btn {
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: .95rem;
+      padding: .5rem 1.3rem;
+      border-radius: 999px;
+      border: none;
+      background: var(--accent);
+      color: #fff4e0;
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease;
+    }
+
+    .next-btn:hover {
+      transform: translateY(-2px);
+      background: #e8662f;
+    }
+
+    .next-btn:disabled {
+      opacity: .4;
+      cursor: default;
+      transform: none;
+    }
+
+    /* ---------- Final ---------- */
+    .final {
+      display: none;
+      position: relative;
+      min-height: 100vh;
+      background: linear-gradient(to bottom, var(--sunset-top) 0%, var(--sunset-mid) 40%, var(--sunset-low) 80%, var(--sunset-horizon) 100%);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      color: #fff4e0;
+      overflow: hidden;
+    }
+
+    .final.active {
+      display: flex;
+    }
+
+    .final .brush {
+      font-size: clamp(2rem, 6vw, 3.2rem);
+      margin: 0 0 .3rem;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, .45);
+    }
+
+    .final .counter {
+      font-family: 'Yuji Syuku', serif;
+      font-size: 1.2rem;
+      margin: 0 0 1.6rem;
+      opacity: .95;
+    }
+
+    .music-player {
+      position: relative;
+      z-index: 6;
+      background: rgba(243, 227, 195, .92);
+      color: var(--ink);
+      border-radius: 16px;
+      padding: 1rem 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      max-width: 360px;
+    }
+
+    .play-btn {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      border: none;
+      background: var(--accent);
+      color: #fff4e0;
+      font-size: 1.1rem;
+      cursor: pointer;
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .song-info {
+      text-align: left;
+      font-size: .85rem;
+      line-height: 1.3;
+    }
+
+    .song-info strong {
+      display: block;
+      font-size: .95rem;
+    }
+
+    .love-btn {
+      margin-top: 1.6rem;
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: 1rem;
+      padding: .85rem 1.7rem;
+      border-radius: 999px;
+      border: none;
+      background: #ff4d6d;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 8px 22px rgba(255, 77, 109, .45);
+      transition: transform .2s ease;
+      z-index: 6;
+      position: relative;
+    }
+
+    .love-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+    }
+
+    .love-btn:disabled {
+      opacity: .5;
+      cursor: default;
+      transform: none;
+    }
+
+    .love-reveal {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      margin-top: 1.4rem;
+      min-height: 200px;
+      z-index: 6;
+    }
+
+    .smoke {
+      position: absolute;
+      top: 45%;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, .95) 0%, rgba(220, 220, 220, .65) 45%, rgba(220, 220, 220, 0) 75%);
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+      pointer-events: none;
+      filter: blur(2px);
+    }
+
+    .smoke-left {
+      left: 20%;
+    }
+
+    .smoke-right {
+      left: 80%;
+    }
+
+    .smoke.poof {
+      animation: poof .8s ease forwards;
+    }
+
+    @keyframes poof {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+      }
+
+      35% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: .95;
+      }
+
+      100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+      }
+    }
+
+    .love-caption {
+      font-family: 'Yuji Syuku', serif;
+      font-size: 1.4rem;
+      margin: 0 0 1rem;
+      opacity: 0;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, .45);
+      transition: opacity .6s ease;
+    }
+
+    .love-caption.show {
+      opacity: 1;
+    }
+
+    .love-images-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 6vw;
+      flex-wrap: wrap;
+    }
+
+    .love-img {
+      width: min(38%, 220px);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, .4);
+      opacity: 0;
+      transform: scale(.7);
+      transition: opacity .5s ease, transform .5s ease;
+    }
+
+    .love-img.show {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .heart {
+      color: #ff4d6d;
+    }
+
+    /* ---------- Botón esquina + modal "AMOR...." ---------- */
+    .corner-btn {
+      position: fixed;
+      top: calc(14px + env(safe-area-inset-top, 0px));
+      right: 14px;
+      z-index: 50;
+      font-family: 'Zen Maru Gothic', sans-serif;
+      font-size: .8rem;
+      padding: .55rem 1.1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 244, 224, .5);
+      background: rgba(255, 123, 66, .88);
+      color: #fff4e0;
+      cursor: pointer;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, .35);
+      transition: transform .2s ease;
+    }
+
+    .corner-btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 10, 30, .72);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      padding: 6%;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-box {
+      position: relative;
+      max-width: 380px;
+      width: 100%;
+      background: var(--paper);
+      border: 2px solid var(--paper-dark);
+      border-radius: 18px;
+      padding: 1.7rem 1.4rem 1.4rem;
+      text-align: center;
+      box-shadow: 0 14px 40px rgba(0, 0, 0, .45);
+      animation: modalIn .35s ease;
+    }
+
+    @keyframes modalIn {
+      from {
+        opacity: 0;
+        transform: scale(.85) translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 8px;
+      right: 10px;
+      border: none;
+      background: none;
+      font-size: 1.2rem;
+      line-height: 1;
+      cursor: pointer;
+      color: var(--ink);
+      padding: .3rem;
+    }
+
+    .modal-text {
+      font-size: 1.02rem;
+      line-height: 1.5;
+      margin: .4rem 0 1.1rem;
+    }
+
+    .modal-img {
+      width: 100%;
+      max-width: 220px;
+      border-radius: 12px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, .3);
+    }
+
+    @media (max-width: 480px) {
+      .vn-image-wrap {
+        top: 4%;
+        width: 58%;
+      }
+
+      .dialog-box {
+        padding: 1.1rem 1.2rem 1rem;
+        max-height: 40vh;
+      }
+
+      .dialog-text {
+        font-size: 1rem;
+      }
+
+      .love-images-row {
+        gap: 4vw;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .leaf,
+      .star {
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Música de fondo: se intenta reproducir en cuanto carga la página.
+       Si el navegador bloquea el autoplay con sonido, arranca con el primer click/touch. -->
+  <audio id="bgMusic" loop preload="auto" src="Miki Matsubara - Stay With Me HD (Club Mix).mp3"></audio>
+
+  <!-- ============ PORTADA ============ -->
+  <section class="scene" id="coverScene">
+    <div class="sun"></div>
+    <div class="stars" id="stars"></div>
+    <div class="leaves" id="leavesCover"></div>
+    <div class="cover">
+      <h1 class="brush">Chino &amp; Miri</h1>
+      <p>Te daré mil cartas en persona pero esta, esta durara hasta el final❤️.</p>
+      <p>Y espero que te guste la canción mi amor, siempre que la escucho pienso lo mismo que el título,
+        "quedate conmigo"❤️.</p>
+      <p>Por cierto mi amor, si no escuchas música, picale a la pantalla jejeje, luego pasa.</p>
+      <button class="start-btn" onclick="startStory()">Entrar</button>
+    </div>
+  </section>
+
+  <!-- ============ NOVELA VISUAL ============ -->
+  <section class="vn-screen" id="vnScreen">
+    <div class="leaves" id="leavesVN"></div>
+    <div class="vn-image-wrap">
+      <img class="vn-image" id="vnImage" alt="">
+    </div>
+    <div class="dialog-wrap">
+      <div class="dialog-box">
+        <p class="speaker">Chino</p>
+        <p class="dialog-text" id="dialogText"></p>
+        <div class="dialog-footer">
+          <span class="leaf-icon" id="blinkLeaf"></span>
+          <button class="next-btn" id="nextBtn" onclick="nextLine()">Siguiente</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINAL ============ -->
+  <section class="final" id="finalScreen">
+    <div class="leaves" id="leavesFinal"></div>
+    <h2 class="brush">FELIZ CUATRO MESES MI AMOR ❤️❤️</h2>
+    <p class="counter">Por estos meses y todos los que vengan por delante, con ansias y con cariño los espero.</p>
+    <div class="music-player">
+      <button class="play-btn" id="playBtn" onclick="toggleMusic()">▶</button>
+      <div class="song-info">
+        <strong>Stay With Me</strong>
+        Miki Matsubara
+      </div>
+    </div>
+
+    <button class="love-btn" id="loveBtn" onclick="revealLove()">TE AMO dame un click jejeje</button>
+
+    <div class="love-reveal" id="loveReveal">
+      <div class="smoke smoke-left" id="smokeLeft"></div>
+      <div class="smoke smoke-right" id="smokeRight"></div>
+      <p class="love-caption" id="loveCaption">TE AMO BONITA ❤️<br>
+        En verdad no sabes cuanto agradezco cada día que paso a tu lado,<br>
+        y se que no soy el mejor, pero te prometo algo, que jamás me dare por vencido.<br>
+        Siempre mejorare, día tras día, para ser un mejor hombre, para mi y para ti,<br>
+        un hombre del cual te sientas más que orgullosa, TE AMO EN VERDAD, lo repido demasiado jajaja<br>
+        Y QUE?? es la puritita verdad jaja TE AMOOOOOOOOOOOOOOOOOOOOO❤️❤️❤️❤️❤️❤️</p>
+      <div class="love-images-row">
+        <img class="love-img" id="loveImgLeft" src="ˏˋ°•_⁀➷ 𝕸.jpg" alt="">
+        <img class="love-img" id="loveImgRight" src="descarga.jpg" alt="">
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ BOTÓN ESQUINA + MODAL "AMOR...." ============ -->
+  <button class="corner-btn" id="cornerBtn" onclick="openAmorModal()">AMOR....</button>
+
+  <div class="modal-overlay" id="amorModal">
+    <div class="modal-box">
+      <button class="modal-close" onclick="closeAmorModal()">✕</button>
+      <p class="modal-text">Mi amoooooooooooooor, ocupo más fotos, ¿crees que me podrías mandar más fotos de ti por
+        favor por favor? Para ocuparlas en futuros regalos, sisisisi TE AMOOOO</p>
+      <img class="modal-img" src="descarga (1).jpg" alt="gatito rogando">
+      <p>Por las molestias....una flor para otra flor GUAPA 😌❤️</p>
+    </div>
+  </div>
+
+  <script>
+    // ---- Modal "AMOR...." ----
+    function openAmorModal() {
+      document.getElementById('amorModal').classList.add('show');
+    }
+    function closeAmorModal() {
+      document.getElementById('amorModal').classList.remove('show');
+    }
+    document.getElementById('amorModal').addEventListener('click', (e) => {
+      if (e.target.id === 'amorModal') closeAmorModal();
+    });
+
+    // ---- Música: intenta sonar sola desde que carga la página ----
+    // Algunos navegadores (sobre todo en celular) bloquean el audio con sonido
+    // hasta que hay una interacción del usuario; si eso pasa, arranca con el
+    // primer click o toque en cualquier parte de la página.
+    const bgMusic = document.getElementById('bgMusic');
+    function syncPlayBtn() {
+      const btn = document.getElementById('playBtn');
+      if (btn) btn.textContent = bgMusic.paused ? '▶' : '❚❚';
+    }
+    bgMusic.play().then(syncPlayBtn).catch(() => { });
+    document.addEventListener('click', function onFirstClick() {
+      if (bgMusic.paused) {
+        bgMusic.play().then(syncPlayBtn).catch(() => { });
+      }
+      document.removeEventListener('click', onFirstClick);
+    }, { once: true });
+
+    // ---- Hojas cayendo (reutilizable en cada escena) ----
+    function spawnLeaves(containerId, count) {
+      const container = document.getElementById(containerId);
+      for (let i = 0; i < count; i++) {
+        const leaf = document.createElement('span');
+        leaf.className = 'leaf';
+        leaf.textContent = Math.random() > 0.5 ? '🍃' : '🍂';
+        leaf.style.left = Math.random() * 100 + '%';
+        const fallDur = 8 + Math.random() * 8;
+        const swayDur = 2 + Math.random() * 2;
+        leaf.style.animationDuration = fallDur + 's, ' + swayDur + 's';
+        leaf.style.animationDelay = (Math.random() * fallDur) + 's, 0s';
+        leaf.style.fontSize = (14 + Math.random() * 10) + 'px';
+        container.appendChild(leaf);
+      }
+    }
+    ['leavesCover', 'leavesVN', 'leavesFinal'].forEach(id => spawnLeaves(id, 14));
+
+    // ---- Corazones cayendo (reemplazan a las hojas cuando se da click en "TE AMO") ----
+    function spawnHearts(containerId, count) {
+      const container = document.getElementById(containerId);
+      for (let i = 0; i < count; i++) {
+        const heart = document.createElement('span');
+        heart.className = 'leaf heart';
+        heart.textContent = '❤️';
+        heart.style.left = Math.random() * 100 + '%';
+        const fallDur = 6 + Math.random() * 6;
+        const swayDur = 2 + Math.random() * 2;
+        heart.style.animationDuration = fallDur + 's, ' + swayDur + 's';
+        heart.style.animationDelay = (Math.random() * 1.5) + 's, 0s';
+        heart.style.fontSize = (16 + Math.random() * 10) + 'px';
+        container.appendChild(heart);
+      }
+    }
+
+    // ---- Estrellas ----
+    const starsBox = document.getElementById('stars');
+    for (let i = 0; i < 40; i++) {
+      const s = document.createElement('span');
+      s.className = 'star';
+      s.style.left = Math.random() * 100 + '%';
+      s.style.top = Math.random() * 70 + '%';
+      s.style.animationDelay = (Math.random() * 4) + 's';
+      starsBox.appendChild(s);
+    }
+
+    // ---- Mensajes de la novela visual ----
+    // Chino: aquí puedes editar o alargar el mensaje como tú quieras.
+    const lines = [
+      "Hola mi amooor, durmiendo?? jajajaa perdoname pero sabes que adoro hacer esto jajaja así que dime amor... ¿sabes qué día es hoy?",
+      "Hoy cumplimos 4 meses juntos, WOOOOOW jajaja el tiempo pasa tán rápido y yo daría mi vida para que pasará más lento cuando estoy a tu lado, pero ya 4 meses mi amor, que tal??.",
+      "Para este mes quise hacer algo distinto, nuevo, retarme por ti jajaja así que, que mejor reto que algo inspirado en un anime favorito tuyo, NARUTO, ojala te guste <3.",
+      "Sé que te quejas de que a Naruto le tomó muchísimo darse cuenta de que Hinata lo amaba. Tuve que modificar estoy hoy, ya que hoy me lo dijiste, tal vez ya sepas que día fue jajaja.",
+      "Y tienes razón: la hizo esperar años. Misiones, peligros, un mundo entero quiso separarlos.",
+      "Pero al final nada de eso importó. Ni el tiempo, ni la distancia, ni los problemas, ni lo diferentes que eran...ni Zasuke jajaja. Siempre encontró el camino de regreso a ella.",
+      "Yo no quiero tardar años en decirte esto, así que te lo digo ahora, en el mes 4 mi niña.",
+      "No importa el tiempo que pase, los kilómetros que algún día nos separen, ni las circunstancias que se nos pongan enfrente.",
+      "Siempre voy a encontrar la forma de amarte, de cuidarte y de estar contigo. Siempre encontraré el camino para llegar a ti, para siempre demostrarte lo mucho que te amo y todo lo que daría por ti.",
+      "Como Naruto eligiendo a Hinata una y otra vez, yo te elijo a ti. Hoy, y en los meses que vienen."
+    ];
+
+    // Una imagen por cada mensaje de "lines" (mismo orden, mismo largo).
+    // Pon tus imágenes en una carpeta /imagenes junto al HTML y ajusta los nombres.
+    const images = [
+      "Para la más Linda❤️.jpg",
+      "amor_minecraft.jpeg",
+      "naruto e hinata.jpg",
+      "descargar.jpg",
+      "Cute kitty holding flower for you ♥.jpg",
+      "☆ NaruHina Chibi.jpg",
+      "amor_cuadruple.jpeg",
+      "amor.jpeg",
+      "1 AÑO!.jpg",
+      "Naruhina.jpg"
+    ];
+
+    let lineIndex = 0;
+    let typing = false;
+
+    function startStory() {
+      document.getElementById('coverScene').style.display = 'none';
+      const vn = document.getElementById('vnScreen');
+      vn.classList.add('active');
+      showFirstImage();
+      typeLine();
+    }
+
+    function showFirstImage() {
+      const img = document.getElementById('vnImage');
+      img.src = images[0] || '';
+      img.classList.add('enter');
+    }
+
+    // Saca la imagen actual con animación, pone la nueva y la entra animada.
+    // callback se llama cuando la nueva imagen ya empezó a entrar (ahí arranca el texto).
+    function transitionImage(newIndex, callback) {
+      const img = document.getElementById('vnImage');
+      img.classList.remove('enter');
+      img.classList.add('exit');
+      setTimeout(() => {
+        img.src = images[newIndex] || '';
+        img.classList.remove('exit');
+        void img.offsetWidth; // fuerza reflow para reiniciar la animación
+        img.classList.add('enter');
+        if (callback) callback();
+      }, 380);
+    }
+
+    function typeLine() {
+      typing = true;
+      const el = document.getElementById('dialogText');
+      const btn = document.getElementById('nextBtn');
+      btn.disabled = true;
+      el.textContent = '';
+      const text = lines[lineIndex];
+      let i = 0;
+      const interval = setInterval(() => {
+        el.textContent += text[i];
+        i++;
+        if (i >= text.length) {
+          clearInterval(interval);
+          typing = false;
+          btn.disabled = false;
+        }
+      }, 28);
+    }
+
+    function nextLine() {
+      if (typing) return;
+      lineIndex++;
+      if (lineIndex < lines.length) {
+        document.getElementById('nextBtn').disabled = true;
+        transitionImage(lineIndex, typeLine);
+      } else {
+        document.getElementById('vnScreen').classList.remove('active');
+        document.getElementById('finalScreen').classList.add('active');
+      }
+    }
+
+    // ---- Botón TE AMO: humo tipo jutsu y luego revela las imágenes ----
+    function revealLove() {
+      const btn = document.getElementById('loveBtn');
+      btn.disabled = true;
+
+      // Cambia las hojas de esta pantalla por corazones cayendo
+      const leavesFinalEl = document.getElementById('leavesFinal');
+      leavesFinalEl.innerHTML = '';
+      spawnHearts('leavesFinal', 20);
+
+      document.getElementById('smokeLeft').classList.add('poof');
+      document.getElementById('smokeRight').classList.add('poof');
+
+      setTimeout(() => {
+        document.getElementById('loveCaption').classList.add('show');
+        document.getElementById('loveImgLeft').classList.add('show');
+        document.getElementById('loveImgRight').classList.add('show');
+      }, 550); // justo cuando el humo ya casi se disipó
+    }
+
+    // ---- Botón de música (play/pausa manual) ----
+    function toggleMusic() {
+      if (bgMusic.paused) {
+        bgMusic.play().then(syncPlayBtn).catch(() => { });
+      } else {
+        bgMusic.pause();
+        syncPlayBtn();
+      }
+    }
+  </script>
+
+</body>
+
+</html>
